@@ -1,0 +1,11 @@
+[package]
+name = "pyrepl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cfonts = "1.1.4"
+clearscreen = "3.0.0"
+colored = "2.1.0"
+duct = "0.13.7"
+rustyline = "14.0.0"
