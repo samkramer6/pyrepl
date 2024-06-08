@@ -3,6 +3,7 @@ use cfonts::{say, Options, Colors, Fonts};
 use colored::Colorize;
 use std::{ thread, time };
 use std::path::Path;
+use std::fs;
 
 pub fn welcome_message() {
 
@@ -33,6 +34,6 @@ pub fn kill_repl() {
 
     // Delete executable file
         if Path::new("repl.py").exists() {
-                // fs::remove_file("repl.py").expect("Could not remove executable file");
+                fs::remove_file("repl.py").expect("Could not remove executable file");
         } 
 }
