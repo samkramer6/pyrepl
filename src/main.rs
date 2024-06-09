@@ -1,3 +1,9 @@
+use rustyline::highlight::MatchingBracketHighlighter;
+use rustyline::validate::MatchingBracketValidator;
+use rustyline::completion::Completer;
+use rustyline
+
+
 use rustyline::error::ReadlineError;
 use crate::py_evaluate::evaluate_code;
 use rustyline::DefaultEditor;
@@ -25,7 +31,7 @@ fn main() {
         highlighter: MatchingBracketHighlighter::new(),
     };
     let mut editor = DefaultEditor::new();
-    editor.set_helper(Some(validator));
+    editor.expect("Could Not Set Helper").set_helper(Some(validator));
     // editor.bind_sequence(
     //     KeyEvent(KeyCode::Char('N'), Modifiers::CTRL),
     //     EventHandler::Simple(Cmd::Newline),
@@ -34,7 +40,7 @@ fn main() {
     'outer: loop {
            
         // Rustyline read
-            let input = rl.as_mut().expect("error").readline("PyREPL> ");
+            let input = editor.as_mut().expect("error").readline("PyREPL> ");
         
         // Handle the error
             match input {
@@ -65,6 +71,5 @@ fn main() {
                 Err(_) => println!("Input Error"), 
             }
     }
-    
     repl_setup::kill_repl();
 }
