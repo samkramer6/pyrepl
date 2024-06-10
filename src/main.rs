@@ -29,14 +29,14 @@ fn main() {
 
                     // Format to string
                         let mut input_string = String::from(okay_input).to_owned();
-
+                        
                     // Parse inputs
                         match input_string.trim() {
                             "exit" => break 'outer,
                             "quit" => break 'outer,
                             "clear" => entire_string.replace_range(.., ""),
                             "cls" => clearscreen::clear().unwrap(),
-                            "workspace" => println!("{}", entire_string), 
+                            "workspace" => println!("{}", entire_string),
                             _ => {
                                 input_string.push_str("\n");
                                 let _entire_string = evaluate_code(&mut entire_string, &input_string);

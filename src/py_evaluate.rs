@@ -1,17 +1,33 @@
 use std::fs::File;
 use std::io::Write;
+use std::string::String;
+
 use duct::cmd;
 
 fn run_pycode(entire_string: &String) -> String {
 
     create_and_write(&entire_string);
 
-    let py_output = cmd!("python","repl.py")
-        .stderr_to_stdout()
-        .read()
-        .expect("Could Not Run REPL Code in Python");    
-    
-    py_output.to_string()
+    let py_output  = cmd!("python","repl.py").read();
+
+    match py_output {
+        Ok(output) => output,
+        Err(_error_message) => String::new(),
+    } 
+
+}
+
+fn pre_run_input(entire_string: &String) -> u32 {
+
+    create_and_write(&entire_string);
+
+    let py_output  = cmd!("python","repl.py").read();
+
+    match py_output {
+        Ok(output) => output.trim().len().try_into().expect("No Input"),
+        Err(_error_message) => String::new().trim().len().try_into().unwrap(),
+    }
+
 }
 
 fn create_and_write(string_to_write: &String) {
@@ -26,10 +42,9 @@ pub fn evaluate_code(entire_string: &mut String, input_string: &String) -> Strin
     let mut copy_of_entire = entire_string.clone();
     copy_of_entire.push_str(&input_string); 
             
-    let output1 = run_pycode(&copy_of_entire);
+    let input_output_length = pre_run_input(&copy_of_entire);
             
-            
-    if output1.trim().len() == 0 {
+    if input_output_length == 0 {
         entire_string.push_str(&input_string);
     } 
             
