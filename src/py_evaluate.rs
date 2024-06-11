@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::Write;
 use std::string::String;
+use std::io::Error;
 
 use duct::cmd;
 
@@ -17,16 +18,12 @@ fn run_pycode(entire_string: &String) -> String {
 
 }
 
-fn pre_run_input(entire_string: &String) -> u32 {
+fn pre_run_input(entire_string: &String) -> Result<String, Error> {
 
     create_and_write(&entire_string);
 
     let py_output  = cmd!("python","repl.py").read();
-
-    match py_output {
-        Ok(output) => output.trim().len().try_into().expect("No Input"),
-        Err(_error_message) => String::new().trim().len().try_into().unwrap(),
-    }
+    py_output
 
 }
 
@@ -42,14 +39,23 @@ pub fn evaluate_code(entire_string: &mut String, input_string: &String) -> Strin
     let mut copy_of_entire = entire_string.clone();
     copy_of_entire.push_str(&input_string); 
             
-    let input_output_length = pre_run_input(&copy_of_entire);
-            
-    if input_output_length == 0 {
-        entire_string.push_str(&input_string);
-    } 
-            
-    let output = run_pycode(&copy_of_entire);
-    println!("{}", output);
+    let input_check = pre_run_input(&copy_of_entire);
+        
+    match input_check {
     
-    entire_string.to_string()
+        Ok(input_output) => {
+            if input_output.trim().len() == 0 {
+                entire_string.push_str(&input_string);
+            } 
+            
+            let output = run_pycode(&copy_of_entire);
+            println!("{}", output);  
+            entire_string.to_string() 
+        },
+        Err(_) => {
+            let output = String::from("");
+            entire_string.push_str(&output);
+            entire_string.to_string()
+        },
+    }
 }
