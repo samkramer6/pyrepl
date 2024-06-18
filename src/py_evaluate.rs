@@ -2,28 +2,22 @@ use std::fs::File;
 use std::io::Write;
 use std::string::String;
 use std::io::Error;
+use colored::Colorize;
 
 use duct::cmd;
 
 fn run_pycode(entire_string: &String) -> String {
 
-    create_and_write(&entire_string);
+    create_and_write(entire_string);
 
-    let py_output  = cmd!("python","repl.py").read();
-
-    match py_output {
-        Ok(output) => output,
-        Err(_error_message) => String::new(),
-    } 
-
+    let py_output  = cmd!("python3","repl.py").read();
+    py_output.expect("Error evaluating python code")
 }
 
 fn pre_run_input(entire_string: &String) -> Result<String, Error> {
 
-    create_and_write(&entire_string);
-
-    let py_output  = cmd!("python","repl.py").read();
-    py_output
+    create_and_write(entire_string);
+    cmd!("python3", "repl.py").read()
 
 }
 
@@ -34,7 +28,7 @@ fn create_and_write(string_to_write: &String) {
 
 }
 
-pub fn evaluate_code(entire_string: &mut String, input_string: &String) -> String {
+pub fn evaluate_code(entire_string: &mut String, input_string: String) -> String {
     
     let mut copy_of_entire = entire_string.clone();
     copy_of_entire.push_str(&input_string); 
@@ -44,18 +38,21 @@ pub fn evaluate_code(entire_string: &mut String, input_string: &String) -> Strin
     match input_check {
     
         Ok(input_output) => {
-            if input_output.trim().len() == 0 {
+            
+            if input_output.trim().is_empty() {
                 entire_string.push_str(&input_string);
             } 
             
-            let output = run_pycode(&copy_of_entire);
-            println!("{}", output);  
+            println!("{}", run_pycode(&copy_of_entire).purple().italic());  
             entire_string.to_string() 
+         
         },
         Err(_) => {
+            
             let output = String::from("");
             entire_string.push_str(&output);
             entire_string.to_string()
+            
         },
     }
 }

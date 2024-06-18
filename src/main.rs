@@ -28,7 +28,7 @@ fn main() {
                 Ok(okay_input) => {
 
                     // Format to string
-                        let mut input_string = String::from(okay_input).to_owned();
+                        let mut input_string = okay_input.to_owned();
                         
                     // Parse inputs
                         match input_string.trim() {
@@ -38,8 +38,8 @@ fn main() {
                             "cls" => clearscreen::clear().unwrap(),
                             "workspace" => println!("{}", entire_string),
                             _ => {
-                                input_string.push_str("\n");
-                                let _entire_string = evaluate_code(&mut entire_string, &input_string);
+                                input_string.push('\n');
+                                let _entire_string = evaluate_code(&mut entire_string, input_string);
                             }
                         }
                 },
